@@ -19,9 +19,9 @@ var (
 
 // kbotCmd represents the kbot command
 var kbotCmd = &cobra.Command{
-	Use:   "kbot",
+	Use:     "kbot",
 	Aliases: []string{"start"},
-	Short: "A brief description of your command",
+	Short:   "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -41,30 +41,30 @@ to quickly create a Cobra application.`,
 			return
 		}
 
-		kbot.Handle(telebot.OnText, func(m telebot.Context) error {
-			log.Print(m.Message().Payload, m.Text())
-			payload := m.Message().Payload
-			switch payload {
-			case "hello":
-				err = m.Send(fmt.Sprintf("Hello, I'm KBot version %s", appVersion))
-			}
-			return err
-		})
-
+		kbot.Handle(telebot.OnText, handleMessage)
 		kbot.Start()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(kbotCmd)
+}
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// kbotCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// kbotCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+func handleMessage(m telebot.Context) error {
+	loc, _ := time.LoadLocation("Europe/Kiev")
+	currentTime := time.Now().In(loc)
+	switch m.Message().Payload {
+	case "hello":
+		err := m.Send(fmt.Sprintf("Hello, I'm KBot version %s", appVersion))
+		return err
+	case "date":
+		err := m.Send(currentTime.Format("02.01.2006 15:04:05"))
+		return err
+	case "day":
+		err := m.Send(currentTime.Format("Monday"))
+		return err
+	default:
+		err := m.Send("Sorry, I don't understand you..")
+		return err
+	}
 }
