@@ -23,6 +23,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
 
       - name: Build&Push
         env:
@@ -49,4 +50,5 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git commit -am "Update version $VERSION"
+          git pull
           git push
